@@ -30,18 +30,27 @@ function Navbar() {
           onClick={() => {
             clearToken();
             window.location.href = "/login"; 
-          }}
-          className={`${linkBase} bg-red-500 text-white hover:bg-red-600`}
-        >
-          Logout
-        </button>
-      ) : (
-        <NavLink
-          to="/login"
-          className={({ isActive }) => `${linkBase} ${isActive ? active : ""}`}
-        >
-          Login
-        </NavLink>
+            }}
+            className={`${linkBase} bg-red-500 text-white hover:bg-red-600`}
+          >
+            Logout
+          </button>
+          ) : (
+          <>
+            <NavLink
+            to="/login"
+            className={({ isActive }) => `${linkBase} ${isActive ? active : ""}`}
+            >
+            Login
+            </NavLink>
+
+            <NavLink
+            to="/signup"
+            className={({ isActive }) => `${linkBase} ${isActive ? active : ""}`}
+            >
+            Sign Up
+            </NavLink>
+          </>
       )}
     </nav>
   );

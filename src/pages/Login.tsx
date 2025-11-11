@@ -18,12 +18,12 @@ function Login() {
   };
 
     return (
-        <>
-        <h1>Login</h1>
-        <div className="flex justify-center items-center p-8">
-            <LoginForm onSubmit={handleLogin} />
+        <div className="flex min-h-screen items-center justify-center bg-gray-100">
+            <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-md">
+                <h2 className="mb-6 text-2xl font-bold text-center">Login</h2>
+                <LoginForm onSubmit={handleLogin} />
+            </div>
         </div>
-        </>
      );
 }
 
