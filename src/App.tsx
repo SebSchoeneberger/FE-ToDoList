@@ -5,12 +5,14 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Mainlayout from './layouts/Mainlayout';
 import ProtectedLayout from './layouts/ProtectedLayout';
+import SignUp from './pages/SignUp';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path='/' element={<Mainlayout />}>
       <Route index element={<Home />} />
       <Route path='login' element={<Login />} />
+      <Route path='signup' element={<SignUp />} />
 
       <Route element={<ProtectedLayout />}>
         <Route path='dashboard' element={<Dashboard />} />
