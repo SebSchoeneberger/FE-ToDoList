@@ -1,3 +1,5 @@
+import { getToken } from "../utils/localStorage";
+
 const API_URL = import.meta.env.VITE_API_URL;
 
 export async function login(email: string, password: string): Promise<{ token: string }> {
@@ -27,6 +29,26 @@ export async function signup(firstName: string, lastName: string, email: string,
     
     if (!res.ok) {
         throw new Error('Signup failed');
+    }
+
+    return res.json();
+}
+
+export async function me(): Promise<{user: any}> {
+    const token = getToken();
+    if (!token) {
+        throw new Error('No token found');
+    }
+
+    const res = await fetch(`${API_URL}/users/me`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+        },
+    });
+
+    if (!res.ok) {
+        throw new Error('Fetching user info failed');
     }
 
     return res.json();

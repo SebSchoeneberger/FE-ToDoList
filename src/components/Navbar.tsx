@@ -1,9 +1,10 @@
-import { NavLink } from "react-router-dom";
-import { getToken, clearToken } from "../utils/localStorage";
+import { NavLink, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthProvider";
 
 
 function Navbar() {
-  const token = getToken();
+  const { token, logoutUser } = useAuth();
+  const navigate = useNavigate();
 
     const linkBase = "px-3 py-2 rounded text-sm font-medium hover:bg-gray-100 transition";
     const active ="bg-gray-200 text-gray-900 font-semibold";
@@ -26,13 +27,10 @@ function Navbar() {
       </NavLink>
 
     {token ? (
-        <button
-          onClick={() => {
-            clearToken();
-            window.location.href = "/login"; 
-            }}
+          <button
+            onClick={() => { logoutUser(); navigate("/", { replace: true }); }}
             className={`${linkBase} bg-red-500 text-white hover:bg-red-600`}
-          >
+            >
             Logout
           </button>
           ) : (

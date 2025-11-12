@@ -1,17 +1,22 @@
 import LoginForm from "../components/LoginForm";
 import type { LoginValues } from "../components/LoginForm";
-import { login } from "../API/authAPI";
-import { storeToken } from "../utils/localStorage";
+import { useAuth } from "../context/AuthProvider";
+import { Navigate, useNavigate } from "react-router-dom";
 
 
 function Login() {
 
-    const handleLogin = async (data: LoginValues) => {
+    const { loginUser, token } = useAuth();
+    const navigate = useNavigate();
+
+    if (token) {
+      return <Navigate to="/dashboard" replace />;
+    }
+
+    async function handleLogin(data: LoginValues) {
     try {
-      const res = await login(data.email, data.password);
-        storeToken(res.token);
-        window.location.href = "/dashboard";
-      console.log("Login successful:", res);
+      await loginUser(data.email, data.password);
+      navigate("/dashboard", { replace: true });
     } catch (err) {
       console.error("Login failed:", err);
     }
