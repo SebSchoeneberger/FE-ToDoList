@@ -1,12 +1,17 @@
 import { Navigate, Outlet } from "react-router-dom";
-import { getToken } from "../utils/localStorage";
+import { useAuth } from "../context/AuthProvider";
 
 function ProtectedLayout() {
-    const token = getToken();
+    const { token, loading } = useAuth();
 
-    if (!token) {
+if (loading) {
+        return <div>Loading...</div>;
+    }
+
+if (!token) {
         return <Navigate to="/login" replace />;
     }
+
     return <Outlet />;
 }
 

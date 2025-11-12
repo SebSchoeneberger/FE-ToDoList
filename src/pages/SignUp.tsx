@@ -1,16 +1,22 @@
 import SignUpForm from "../components/SignUpForm";
 import type { SignUpValues } from "../components/SignUpForm";
-import { signup, login } from "../API/authAPI";
-import { storeToken } from "../utils/localStorage";
+import { signup } from "../API/authAPI";
+import {useAuth} from "../context/AuthProvider";
+import { Navigate, useNavigate } from "react-router-dom";
 
 function SignUp() {
-    const handleSignUp = async (data: SignUpValues) => {
+    const { token, loginUser } = useAuth();
+    const navigate = useNavigate();
+    
+    if (token) {
+        return <Navigate to="/dashboard" replace />;
+    }
+
+    async function handleSignUp(data: SignUpValues) {
         try {
             await signup(data.firstName, data.lastName, data.email, data.password);
-
-            const loginRes = await login(data.email, data.password);
-            storeToken(loginRes.token);
-            window.location.href = "/dashboard";
+            await loginUser(data.email, data.password);
+            navigate("/dashboard", { replace: true });
         } catch (error) {
             console.error("Signup failed:", error);
         }
