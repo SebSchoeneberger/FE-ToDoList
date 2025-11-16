@@ -2,12 +2,15 @@ import { useAuth } from "../context/AuthProvider";
 import { useEffect, useState } from "react";
 import { getTodos } from "../API/todoAPI";
 import { useNavigate } from "react-router-dom";
+import { getCategories } from "../API/categoryAPI";
 
 
 function Dashboard() {
     const { user, loading } = useAuth();
     const [todos, setTodos] = useState<any[]>([]);
     const [loadingTodos, setLoadingTodos] = useState<boolean>(true);
+    const [categories, setCategories] = useState<any[]>([]);
+    const [selectedCategory, setSelectedCategory] = useState<string>("all");
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -15,6 +18,9 @@ function Dashboard() {
             try {
                 const data = await getTodos();
                 setTodos(data.todos);
+
+                const categoryData = await getCategories();
+                setCategories(categoryData.categories);
             } catch (error) {
                 console.error("Error fetching todos:", error);
             } finally {
@@ -48,14 +54,51 @@ function Dashboard() {
         );
     }
 
+    const categoryOptions = [
+    { id: "all", name: "All" },
+    { id: "none", name: "No category" },
+    ...categories.map((cat) => ({
+        id: cat.id,
+        name: cat.name,
+    })),
+    ];
+
+    const filteredTodos = todos.filter((todo) => {
+    if (selectedCategory === "all") return true;
+    if (selectedCategory === "none") return !todo.category;
+
+    const catId =
+        todo.category && typeof todo.category === "object"
+        ? todo.category.id
+        : todo.category;
+    
+    return catId === Number(selectedCategory);
+
+    });
+
     return (
         <div className="min-h-screen bg-gray-100 p-6">
         <h1 className="text-2xl font-semibold mb-4">
             Welcome back, {user?.firstName}!
         </h1>
 
+       <div className="mb-4">
+        <label className="block mb-1 text-sm font-medium">Filter by Category</label>
+        <select
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+            className="rounded-md border px-3 py-2"
+        >
+            {categoryOptions.map((cat) => (
+            <option key={cat.id} value={cat.id}>
+                {cat.name}
+            </option>
+            ))}
+        </select>
+        </div>
+
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {todos.map((todo) => (
+            {filteredTodos.map((todo) => (
             <div key={todo.id}
                 onClick={() => navigate(`/todo/${todo.id}`)} 
                 className="rounded-lg bg-white p-4 shadow hover:shadow-lg cursor-pointer">

@@ -37,7 +37,7 @@ function CreateToDoForm() {
 
     async function onSubmit(formData: any) {
         try {
-            const categoryValue = formData.category === "" ? undefined : formData.category;
+            const categoryValue =formData.category === "" ? null : Number(formData.category);
             const dueDateValue = formData.dueDate === "" ? undefined : formData.dueDate;
             await createTodo({
                 title: formData.title,
