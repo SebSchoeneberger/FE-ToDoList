@@ -7,6 +7,7 @@ import Mainlayout from './layouts/Mainlayout';
 import ProtectedLayout from './layouts/ProtectedLayout';
 import SignUp from './pages/SignUp';
 import CreateTodo from './pages/CreateToDo';
+import ToDoDetails from './pages/ToDoDetails';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -18,6 +19,7 @@ const router = createBrowserRouter(
       <Route element={<ProtectedLayout />}>
         <Route path='dashboard' element={<Dashboard />} />
         <Route path='create-todo' element={<CreateTodo />} />
+        <Route path='todo/:id' element={<ToDoDetails />} />
       </Route>
     </Route>
   )
