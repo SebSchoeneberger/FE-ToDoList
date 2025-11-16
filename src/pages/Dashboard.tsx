@@ -56,7 +56,9 @@ function Dashboard() {
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {todos.map((todo) => (
-            <div key={todo.id} className="rounded-lg bg-white p-4 shadow">
+            <div key={todo.id}
+                onClick={() => navigate(`/todo/${todo.id}`)} 
+                className="rounded-lg bg-white p-4 shadow hover:shadow-lg cursor-pointer">
                 <h2 className="text-lg font-medium">{todo.title}</h2>
 
                 {todo.description && (
@@ -74,6 +76,19 @@ function Dashboard() {
                 {todo.dueDate && (
                 <div className="text-sm text-gray-500">
                     Due: {new Date(todo.dueDate).toLocaleDateString()}
+                </div>
+                )}
+
+                {todo.status && (
+                <div className="text-sm text-gray-500">
+                    Status: {todo.status}
+                </div>
+                )
+                }
+
+                {todo.priority && (
+                <div className="text-sm text-gray-500">
+                    Priority: {todo.priority}
                 </div>
                 )}
             </div>
