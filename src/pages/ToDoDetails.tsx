@@ -56,7 +56,7 @@ function ToDoDetails() {
         setUpdate(true);
 
         try {
-            const categoryValue = formValues.category === "" ? null : formValues.category;
+            const categoryValue = formValues.category === "" ? null : Number(formValues.category);
             const dueDateValue = formValues.dueDate === "" ? null : formValues.dueDate;
 
             await updateTodo(id, {
