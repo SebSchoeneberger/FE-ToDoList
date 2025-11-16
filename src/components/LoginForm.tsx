@@ -7,7 +7,7 @@ export type LoginValues = {
 
 function LoginForm({ onSubmit }: { onSubmit: (data: LoginValues) => void }) {
 
-    const { register, handleSubmit, formState: { errors }, formState: { isSubmitting } } = useForm<LoginValues>({defaultValues: {
+    const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<LoginValues>({defaultValues: {
       email: '',
       password: ''
     }});
