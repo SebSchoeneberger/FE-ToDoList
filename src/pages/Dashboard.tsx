@@ -138,13 +138,20 @@ function Dashboard() {
             ))}
         </div>
 
-        <div className="mt-8">
+        <div className="mt-8 flex gap-4 justify-center">
             <button
             onClick={() => navigate("/create-todo")}
             className="rounded-md bg-blue-600 px-4 py-2 font-medium text-white hover:bg-blue-700"
             >
             Create To-Do
             </button>
+
+            <button
+            onClick={() => navigate("/categories")}
+            className="rounded-md border border-gray-300 px-4 py-2 font-medium text-gray-700 bg-white hover:bg-gray-50"
+        >
+            Manage Categories
+        </button>
         </div>
         </div>
     );
