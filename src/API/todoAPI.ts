@@ -106,3 +106,22 @@ export async function deleteTodo(id: string): Promise<any> {
 
     return res.json();
 }
+
+
+export async function markTodoDone(id: string): Promise<any> {
+    const token = getToken();
+    if (!token) throw new Error('No token found');
+
+    const res = await fetch(`${API_URL}/todos/${id}`, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({ status: "completed" }),
+    });
+
+    if (!res.ok) throw new Error("Marking todo complete failed");
+
+    return res.json();
+}
