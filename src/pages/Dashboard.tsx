@@ -1,6 +1,6 @@
 import { useAuth } from "../context/AuthProvider";
 import { useEffect, useState } from "react";
-import { getTodos } from "../API/todoAPI";
+import { getTodos, markTodoDone } from "../API/todoAPI";
 import { useNavigate } from "react-router-dom";
 import { getCategories } from "../API/categoryAPI";
 
@@ -11,6 +11,7 @@ function Dashboard() {
     const [loadingTodos, setLoadingTodos] = useState<boolean>(true);
     const [categories, setCategories] = useState<any[]>([]);
     const [selectedCategory, setSelectedCategory] = useState<string>("all");
+    const [selectedStatus, setSelectedStatus] = useState<string>("all");
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -63,18 +64,47 @@ function Dashboard() {
     })),
     ];
 
-    const filteredTodos = todos.filter((todo) => {
-    if (selectedCategory === "all") return true;
-    if (selectedCategory === "none") return !todo.category;
+    const statusOptions = [
+  { id: "all", name: "All" },
+  { id: "pending", name: "Pending" },
+  { id: "in-progress", name: "In Progress" },
+  { id: "completed", name: "Completed" },
+];
+
+
+const filteredTodos = todos.filter((todo) => {
+  if (selectedCategory !== "all") {
+    if (selectedCategory === "none" && todo.category) return false;
 
     const catId =
-        todo.category && typeof todo.category === "object"
+      todo.category && typeof todo.category === "object"
         ? todo.category.id
         : todo.category;
-    
-    return catId === Number(selectedCategory);
 
-    });
+    if (selectedCategory !== "none" && Number(selectedCategory) !== Number(catId)) {
+      return false;
+    }
+  }
+
+  if (selectedStatus !== "all" && todo.status !== selectedStatus) {
+    return false;
+  }
+
+  return true;
+});
+
+
+    async function handleMarkDone(id: string) {
+    try {
+        await markTodoDone(id);
+
+        const data = await getTodos();
+        setTodos(data.todos);
+    } catch (err) {
+        console.error("Error marking todo as done:", err);
+    }
+}
+
 
     return (
         <div className="min-h-screen bg-gray-100 p-6">
@@ -82,7 +112,7 @@ function Dashboard() {
             Welcome back, {user?.firstName}!
         </h1>
 
-       <div className="mb-4">
+       <div className="mb-4 flex gap-4 justify-center items-center">
         <label className="block mb-1 text-sm font-medium">Filter by Category</label>
         <select
             value={selectedCategory}
@@ -95,7 +125,21 @@ function Dashboard() {
             </option>
             ))}
         </select>
-        </div>
+
+            <label className="block mb-1 text-sm font-medium">Filter by Status</label>
+            <select
+                value={selectedStatus}
+                onChange={(e) => setSelectedStatus(e.target.value)}
+                className="rounded-md border px-3 py-2"
+                >
+                {statusOptions.map((opt) => (
+                    <option key={opt.id} value={opt.id}>
+                    {opt.name}
+                </option>
+                ))}
+            </select>
+
+                </div>
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {filteredTodos.map((todo) => (
@@ -133,6 +177,22 @@ function Dashboard() {
                 <div className="text-sm text-gray-500">
                     Priority: {todo.priority}
                 </div>
+                )}
+
+                {todo.status !== "completed" ? (
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            handleMarkDone(todo.id);
+                        }}
+                        className="mt-3 text-sm bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700"
+                    >
+                        Mark as Done
+                    </button>
+                ) : (
+                    <div className="mt-3 text-sm text-green-600 font-semibold">
+                        ✓ Completed
+                    </div>
                 )}
             </div>
             ))}
