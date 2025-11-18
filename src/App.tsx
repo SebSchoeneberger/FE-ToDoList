@@ -9,6 +9,7 @@ import SignUp from './pages/SignUp';
 import CreateTodo from './pages/CreateToDo';
 import ToDoDetails from './pages/ToDoDetails';
 import Categories from './pages/Categories';
+import NotFound from './pages/NotFound';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -16,6 +17,7 @@ const router = createBrowserRouter(
       <Route index element={<Home />} />
       <Route path='login' element={<Login />} />
       <Route path='signup' element={<SignUp />} />
+      <Route path='*' element={<NotFound />} />
 
       <Route element={<ProtectedLayout />}>
         <Route path='dashboard' element={<Dashboard />} />
