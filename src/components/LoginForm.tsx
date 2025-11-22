@@ -1,15 +1,14 @@
 import {useForm} from "react-hook-form";
-
-export type LoginValues = {
-  email: string
-  password: string
-}
+import { zodResolver } from "@hookform/resolvers/zod";
+import { loginSchema, type LoginValues } from "../validation/authSchemas";
 
 function LoginForm({ onSubmit }: { onSubmit: (data: LoginValues) => void }) {
 
-    const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<LoginValues>({defaultValues: {
-      email: '',
-      password: ''
+    const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<LoginValues>({
+      resolver: zodResolver(loginSchema),
+      defaultValues: {
+        email: '',
+        password: ''
     }});
 
     return ( 
@@ -24,7 +23,7 @@ function LoginForm({ onSubmit }: { onSubmit: (data: LoginValues) => void }) {
               type="email"
               autoFocus
               autoComplete="email"
-              {...register("email", { required: "Email is required" })}
+              {...register("email")}
               className="w-full rounded-md border px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500"
             />
 
@@ -41,7 +40,7 @@ function LoginForm({ onSubmit }: { onSubmit: (data: LoginValues) => void }) {
               id="password"
               type="password"
               autoComplete="current-password"
-              {...register("password", { required: "Password is required" })}
+              {...register("password")}
               className="w-full rounded-md border px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500"
             />
 

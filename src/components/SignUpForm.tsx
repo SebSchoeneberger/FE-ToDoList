@@ -1,24 +1,18 @@
 import {useForm} from "react-hook-form";
-
-export type SignUpValues = {
-    firstName: string
-    lastName: string
-    email: string
-    password: string
-    confirmPassword: string
-}
+import { zodResolver } from "@hookform/resolvers/zod";
+import { signUpSchema, type SignUpValues } from "../validation/authSchemas";
 
 function SignUpForm({ onSubmit }: { onSubmit: (data: SignUpValues) => void }) {
     
-    const { register, handleSubmit, watch, formState: { errors }, formState: { isSubmitting } } = useForm<SignUpValues>({defaultValues: {
+    const { register, handleSubmit, formState: { errors }, formState: { isSubmitting } } = useForm<SignUpValues>({
+        resolver: zodResolver(signUpSchema),
+        defaultValues: {
         firstName: '',
         lastName: '',
         email: '',
         password: '',
         confirmPassword: ''
     }});
-
-    const password = watch("password", "");
 
     return (
         <>
@@ -32,7 +26,7 @@ function SignUpForm({ onSubmit }: { onSubmit: (data: SignUpValues) => void }) {
               type="text"
               autoFocus
               autoComplete="given-name"
-              {...register("firstName", { required: "First name is required" })}
+              {...register("firstName")}
               className="w-full rounded-md border px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500"
             />
 
@@ -49,7 +43,7 @@ function SignUpForm({ onSubmit }: { onSubmit: (data: SignUpValues) => void }) {
               id="lastName"
               type="text"
               autoComplete="family-name"
-              {...register("lastName", { required: "Last name is required" })}
+              {...register("lastName")}
               className="w-full rounded-md border px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500"
             />
 
@@ -66,7 +60,7 @@ function SignUpForm({ onSubmit }: { onSubmit: (data: SignUpValues) => void }) {
               id="email"
               type="email"
               autoComplete="email"
-              {...register("email", { required: "Email is required" })}
+              {...register("email")}
               className="w-full rounded-md border px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500"
             />
 
@@ -83,7 +77,7 @@ function SignUpForm({ onSubmit }: { onSubmit: (data: SignUpValues) => void }) {
               id="password"
               type="password"
               autoComplete="new-password"
-              {...register("password", { required: "Password is required" })}
+              {...register("password")}
               className="w-full rounded-md border px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500"
             />
 
@@ -100,11 +94,7 @@ function SignUpForm({ onSubmit }: { onSubmit: (data: SignUpValues) => void }) {
               id="confirmPassword"
               type="password"
               autoComplete="new-password"
-              {...register("confirmPassword", { 
-                required: "Confirm password is required",
-                validate: value =>
-                  value === password || "The passwords do not match"
-              })}
+              {...register("confirmPassword")}
               className="w-full rounded-md border px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500"
             />      
         {errors.confirmPassword && (

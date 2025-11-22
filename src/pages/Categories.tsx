@@ -3,12 +3,8 @@ import { useForm } from "react-hook-form";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthProvider";
 import { getCategories, createCategory, deleteCategory } from "../API/categoryAPI";
-
-type CategoryFormValues = {
-    name: string;
-    description: string;
-    color: string;
-};
+import { zodResolver } from "@hookform/resolvers/zod";
+import { createCategorySchema, type CategoryFormValues } from "../validation/categoryShemas";
 
 function Categories() {
     const { token } = useAuth();
@@ -22,6 +18,7 @@ function Categories() {
         reset,
         formState: { errors, isSubmitting },
     } = useForm<CategoryFormValues>({
+        resolver: zodResolver(createCategorySchema),
         defaultValues: {
             name: "",
             description: "",
@@ -151,7 +148,7 @@ function Categories() {
                         </label>
                         <input
                             className="w-full rounded-md border px-3 py-2"
-                            {...register("name", { required: "Name is required" })}
+                            {...register("name")}
                         />
                         {errors.name && (
                             <p className="text-sm text-red-600">{errors.name.message}</p>
@@ -164,6 +161,9 @@ function Categories() {
                             className="w-full rounded-md border px-3 py-2"
                             {...register("description")}
                         />
+                        {errors.description && (
+                            <p className="text-sm text-red-600">{errors.description.message}</p>
+                        )}
                     </div>
 
                     <div>
@@ -175,6 +175,9 @@ function Categories() {
                             placeholder="#3498db"
                             {...register("color")}
                         />
+                        {errors.color && (
+                            <p className="text-sm text-red-600">{errors.color.message}</p>
+                        )}
                     </div>
 
                     <button

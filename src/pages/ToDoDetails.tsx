@@ -3,6 +3,7 @@ import { useParams, useNavigate, Navigate } from "react-router-dom";
 import { getTodobyId, updateTodo, deleteTodo } from "../API/todoAPI";
 import { getCategories } from "../API/categoryAPI";
 import { useAuth } from "../context/AuthProvider";
+import { todoSchema } from "../validation/todosSchemas";
 
 function ToDoDetails() {
     const {token} = useAuth();
@@ -56,6 +57,13 @@ function ToDoDetails() {
         setUpdate(true);
 
         try {
+            const parsed = todoSchema.safeParse(formValues);
+            if (!parsed.success) {
+                console.error("Validation errors:", parsed.error.format());
+                setUpdate(false);
+                return;
+            }
+            
             const categoryValue = formValues.category === "" ? null : Number(formValues.category);
             const dueDateValue = formValues.dueDate === "" ? null : formValues.dueDate;
 
