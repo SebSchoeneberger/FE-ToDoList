@@ -3,9 +3,12 @@ import { useEffect, useState } from "react";
 import { getCategories } from "../API/categoryAPI";
 import { createTodo } from "../API/todoAPI";
 import { useNavigate } from "react-router-dom";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { todoSchema, type TodoFormData } from "../validation/todosSchemas";
 
 function CreateToDoForm() {
-    const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({
+    const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<TodoFormData>({
+        resolver: zodResolver(todoSchema),
         defaultValues: {
             title: '',
             description: "",
@@ -35,7 +38,7 @@ function CreateToDoForm() {
         fetchCategories();
     }, []);
 
-    async function onSubmit(formData: any) {
+    async function onSubmit(formData: TodoFormData) {
         try {
             const categoryValue =formData.category === "" ? null : Number(formData.category);
             const dueDateValue = formData.dueDate === "" ? undefined : formData.dueDate;
@@ -62,7 +65,7 @@ function CreateToDoForm() {
         </label>
         <input
             className="w-full rounded-md border px-3 py-2"
-            {...register("title", { required: "Title is required" })}
+            {...register("title")}
         />
         {errors.title && (
             <p className="text-red-600 text-sm">{errors.title.message}</p>
@@ -75,6 +78,9 @@ function CreateToDoForm() {
             className="w-full rounded-md border px-3 py-2"
             {...register("description")}
         />
+        {errors.description && (
+            <p className="text-red-600 text-sm">{errors.description.message}</p>
+            )}
         </div>
 
         <div>
