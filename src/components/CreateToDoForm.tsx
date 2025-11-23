@@ -1,10 +1,10 @@
 import { useForm } from "react-hook-form";
-import { useEffect, useState } from "react";
 import { getCategories } from "../API/categoryAPI";
 import { createTodo } from "../API/todoAPI";
 import { useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { todoSchema, type TodoFormData } from "../validation/todosSchemas";
+import { useQuery, useMutation } from "@tanstack/react-query";
 
 function CreateToDoForm() {
     const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<TodoFormData>({
@@ -18,42 +18,39 @@ function CreateToDoForm() {
             priority: "medium",
         }
     });
-    const [categories, setCategories] = useState<any[]>([]);
-    const [loadingCategories, setLoadingCategories] = useState<boolean>(true);
     const navigate = useNavigate();
-    
 
-    useEffect(() => {
-        async function fetchCategories() {
-            try {
-                const data = await getCategories();
-                setCategories(data.categories);
-            } catch (error) {
-                console.error("Error fetching categories:", error);
-            } finally {
-                setLoadingCategories(false);
-            }
-        }
+    const { data: categoriesData, isLoading: loadingCategories} = useQuery({
+        queryKey: ["categories"],
+        queryFn: getCategories,
+    });
 
-        fetchCategories();
-    }, []);
+    const categories = categoriesData?.categories || [];
+
+    const createTodoMutation = useMutation({
+        mutationFn: (formData: TodoFormData) => {
+        const categoryValue = formData.category === "" ? null : Number(formData.category);
+        const dueDateValue = formData.dueDate === "" ? undefined : formData.dueDate;
+
+        return createTodo({
+            title: formData.title,
+            description: formData.description,
+            dueDate: dueDateValue,
+            category: categoryValue,
+            status: formData.status,
+            priority: formData.priority,
+        });
+        },
+        onSuccess: () => {
+        navigate("/dashboard");
+        },
+        onError: (error) => {
+        console.error("Error creating todo:", error);
+        },
+    });
 
     async function onSubmit(formData: TodoFormData) {
-        try {
-            const categoryValue =formData.category === "" ? null : Number(formData.category);
-            const dueDateValue = formData.dueDate === "" ? undefined : formData.dueDate;
-            await createTodo({
-                title: formData.title,
-                description: formData.description,
-                dueDate: dueDateValue,
-                category: categoryValue,
-                status: formData.status,
-                priority: formData.priority,
-            });
-            navigate("/dashboard");
-        } catch (error) {
-            console.error("Error creating todo:", error);
-        }
+        createTodoMutation.mutate(formData);
     }
 
     return (

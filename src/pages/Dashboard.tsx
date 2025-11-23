@@ -30,6 +30,19 @@ function Dashboard() {
     const todos = todosData?.todos || [];
     const categories = categoriesData?.categories || [];
 
+    // Mutation to mark ToDo's as done
+    const markDoneMutation = useMutation({
+        mutationFn: (id: string) => markTodoDone(id),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["todos"] });
+        },
+    });
+    
+    async function handleMarkDone(id: string) {
+        markDoneMutation.mutate(id);
+    }
+
+
     if (loading || loadingTodos) {
         return <div>Loading...</div>;
     }
@@ -91,17 +104,6 @@ const filteredTodos = todos.filter((todo) => {
   return true;
 });
 
-    const markDoneMutation = useMutation({
-        mutationFn: (id: string) => markTodoDone(id),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["todos"] });
-        },
-    });
-
-
-    async function handleMarkDone(id: string) {
-        markDoneMutation.mutate(id);
-    }
 
 
     return (
