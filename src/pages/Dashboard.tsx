@@ -1,36 +1,34 @@
 import { useAuth } from "../context/AuthProvider";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { getTodos, markTodoDone } from "../API/todoAPI";
 import { useNavigate } from "react-router-dom";
 import { getCategories } from "../API/categoryAPI";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 
 function Dashboard() {
     const { user, loading } = useAuth();
-    const [todos, setTodos] = useState<any[]>([]);
-    const [loadingTodos, setLoadingTodos] = useState<boolean>(true);
-    const [categories, setCategories] = useState<any[]>([]);
     const [selectedCategory, setSelectedCategory] = useState<string>("all");
     const [selectedStatus, setSelectedStatus] = useState<string>("all");
     const navigate = useNavigate();
+    const queryClient = useQueryClient();
 
-    useEffect(() => {
-        async function fetchTodos() {
-            try {
-                const data = await getTodos();
-                setTodos(data.todos);
+    // Tanstack React Query to fetch todos and categories
+    const {
+        data: todosData,
+        isLoading: loadingTodos,
+    } = useQuery({
+        queryKey: ["todos"],
+        queryFn: getTodos,
+    });
+    
+    const { data: categoriesData } = useQuery({
+        queryKey: ["categories"],
+        queryFn: getCategories,
+    });
 
-                const categoryData = await getCategories();
-                setCategories(categoryData.categories);
-            } catch (error) {
-                console.error("Error fetching todos:", error);
-            } finally {
-                setLoadingTodos(false);
-            }   
-        }
-
-        fetchTodos();
-    }, []);
+    const todos = todosData?.todos || [];
+    const categories = categoriesData?.categories || [];
 
     if (loading || loadingTodos) {
         return <div>Loading...</div>;
@@ -93,17 +91,17 @@ const filteredTodos = todos.filter((todo) => {
   return true;
 });
 
+    const markDoneMutation = useMutation({
+        mutationFn: (id: string) => markTodoDone(id),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["todos"] });
+        },
+    });
+
 
     async function handleMarkDone(id: string) {
-    try {
-        await markTodoDone(id);
-
-        const data = await getTodos();
-        setTodos(data.todos);
-    } catch (err) {
-        console.error("Error marking todo as done:", err);
+        markDoneMutation.mutate(id);
     }
-}
 
 
     return (
