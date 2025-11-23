@@ -1,5 +1,5 @@
 import SignUpForm from "../components/SignUpForm";
-import type { SignUpValues } from "../components/SignUpForm";
+import type { SignUpValues } from "../validation/authSchemas";
 import { signup } from "../API/authAPI";
 import {useAuth} from "../context/AuthProvider";
 import { Navigate, useNavigate } from "react-router-dom";

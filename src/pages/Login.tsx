@@ -1,5 +1,5 @@
 import LoginForm from "../components/LoginForm";
-import type { LoginValues } from "../components/LoginForm";
+import type { LoginValues } from "../validation/authSchemas";
 import { useAuth } from "../context/AuthProvider";
 import { Navigate, useNavigate } from "react-router-dom";
 
